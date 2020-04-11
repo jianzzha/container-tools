@@ -1,14 +1,15 @@
 FROM centos:8
 USER root
 WORKDIR /root
-RUN  yum -y install git @'Development Tools' rpm-build yum-utils dnf-plugins-core \
+RUN  yum -y install git @'Development Tools' which rpm-build yum-utils dnf-plugins-core \
      && yum config-manager --set-enabled PowerTools \
      && yum install -y groff libcap-ng python3 openssl-devel \
      && git clone https://github.com/openvswitch/ovs.git \
-     && pushd ovs && ./boot.sh && ./configure --enable-ssl && make dist && popd \
+     && pushd ovs && ./boot.sh && ./configure --enable-ssl && make && make install && popd \
      && git clone https://github.com/ovn-org/ovn && pushd ovn \
-     && sed -e 's/@VERSION@/0.0.1/' rhel/ovn-fedora.spec.in > /tmp/ovn.spec \
-     && yum-builddep -y /tmp/ovn.spec && rm /tmp/ovn.spec \
      && ./boot.sh && ./configure --with-ovs-source=/root/ovs \
-     && make rpm-fedora && popd 
-
+     && make install &&  popd
+COPY start-ovs-ovn.sh /usr/local/bin
+RUN chmod u+x /usr/local/bin/start-ovs-ovn.sh
+WORKDIR /root
+ENV PATH="${PATH}:/usr/local/share/openvswitch/scripts:/usr/local/share/ovn/scripts"
