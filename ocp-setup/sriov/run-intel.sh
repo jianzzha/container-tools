@@ -1,4 +1,21 @@
 #!/bin/bash
+pause(){
+ echo $1
+ read -n1 -rsp $'Press any key to continue or Ctrl+C to exit...\n'
+}
+
+node=$(oc get nodes --selector='node-role.kubernetes.io/worker' \
+    --selector='!node-role.kubernetes.io/master' -o name | head -1 | sed -e 's|^node/||')
+
+if [ -z "${WORKER_NODE}" ]; then
+        pause "env WORKER_NODE not defined! using node ${node} as RT node?"
+        export WORKER_NODE=${node}
+elif  ! oc get node ${WORKER_NODE}; then
+        pause "node ${WORKER_NODE} is not a valid node! using node ${node} as RT node?"
+        export WORKER_NODE=${node}
+else
+        export WORKER_NODE=${WORKER_NODE}
+fi
 
 set -e
 set -x
@@ -10,11 +27,8 @@ fi
 
 yum install -y wget skopeo jq
 
-
 SRIOV_OPERATOR_REPO=https://github.com/openshift/sriov-network-operator.git
 SRIOV_OPERATOR_NAMESPACE=openshift-sriov-network-operator
-
-WORKER_NODE=perf150
 
 NUM_OF_WORKER=$(oc get nodes | grep ${WORKER_NODE} | wc -l)
 NUM_OF_MASTER=$(oc get nodes | grep master | wc -l)
