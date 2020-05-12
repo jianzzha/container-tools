@@ -1,0 +1,52 @@
+### setup cnv
+export BUNDLE_REGISTRY_NAME=cnv-bundle-registry
+export BUNDLE_REGISTRY_TAG=2.2.0
+export PACKAGEVERSION=5.0.0
+export MY_REGISTRY=docker.io/cscojianzhan/
+export BUILDAH_FORMAT=dockerv2
+curl https://raw.githubusercontent.com/kubevirt/hyperconverged-cluster-operator/master/deploy/deploy_imageregistry.sh | HCO_REGISTRY_IMAGE=${MY_REGISTRY}${BUNDLE_REGISTRY_NAME}:${BUNDLE_REGISTRY_TAG} HCO_VERSION=${BUNDLE_REGISTRY_TAG} HCO_CHANNEL=2.2 TARGET_NAMESPACE=openshift-cnv bash -x
+
+### use centos image on local directory on perf150 
+ssh core@perf150 "sudo mkdir -p /var/tmp/cnv"
+wget https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-2003.qcow2
+LIBGUESTFS_BACKEND=direct virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2 --root-password password:redhat
+qemu-img convert -O raw CentOS-7-x86_64-GenericCloud-2003.qcow2 centos.img
+scp centos.img core@perf150:
+ssh core@perf150 "sudo mv ~core/centos.img /var/tmp/cnv/; sudo chmod 0777 /var/tmp/cnv; sudo chmod 0777 /var/tmp/cnv/centos.img; sudo chcon -t container_file_t -R /var/tmp/cnv"
+
+### start VM using centos image on perf150
+cat <<EOF | oc create -f - 
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  name: vm-centos
+spec:
+  running: true
+  template:
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: host-disk 
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 8Gi 
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - hostDisk:
+          capacity: 30Gi
+          type: DiskOrCreate
+          path: /var/tmp/cnv/centos.img
+        name: host-disk 
+EOF
+
+### access VM console
+subscription-manager repos --enable cnv-2.1-for-rhel-8-x86_64-rpms
+dnf install kubevirt-virtctl -y
+virtctl console vm-centos
+
