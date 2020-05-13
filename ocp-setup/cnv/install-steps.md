@@ -1,4 +1,7 @@
+
 ### setup cnv
+
+```
 cat <<EOF | oc create -f -
 apiVersion: v1
 kind: Namespace
@@ -25,7 +28,9 @@ spec:
   source: redhat-operators
   sourceNamespace: openshift-marketplace
 EOF
+```
 
+```
 cat <<EOF | oc create -f -
 apiVersion: hco.kubevirt.io/v1alpha1
 kind: HyperConverged
@@ -37,8 +42,11 @@ metadata:
 spec:
   BareMetalPlatform: true
 EOF
+```
 
 ### start performance addon operator
+
+```
 cat <<EOF | oc create -f -
 apiVersion: v1
 kind: Namespace
@@ -67,8 +75,11 @@ spec:
   source: redhat-operators
   sourceNamespace: openshift-marketplace
 EOF
+```
 
 ### apply performance profile
+
+```
 oc label --overwrite node perf150 node-role.kubernetes.io/worker-sriov=""
 cat <<EOF | oc create -f -
 apiVersion: machineconfiguration.openshift.io/v1
@@ -89,10 +100,13 @@ spec:
     matchLabels:
       node-role.kubernetes.io/worker-sriov: ""
 EOF
+```
 
 ### wait until the node setup complete
 
 ### start sriov operator
+
+```
 cat <<EOF | oc create -f -
 apiVersion: v1
 kind: Namespace
@@ -121,8 +135,11 @@ spec:
   source: redhat-operators 
   sourceNamespace: openshift-marketplace
 EOF
+```
 
 ### apply the sriov policy and network
+
+```
 cat <<EOF | oc create -f -
 apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
@@ -210,9 +227,11 @@ spec:
   resourceName: intelnics0
   networkNamespace: default
 EOF
+```
 
 ### update image and push it to docker repo
-ssh core@perf150 "sudo mkdir -p /var/tmp/cnv"
+
+```
 wget https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-2003.qcow2
 LIBGUESTFS_BACKEND=direct virt-customize -a CentOS-7-x86_64-GenericCloud-2003.qcow2 --root-password password:redhat
 
@@ -271,9 +290,12 @@ spec:
             networkName: default/sriov-intel-west
           name: sriov-intel-west
 EOF
+```
 
 ### access VM console
+
+```
 subscription-manager repos --enable cnv-2.1-for-rhel-8-x86_64-rpms
 dnf install kubevirt-virtctl -y
 virtctl console vm-centos
-
+```
