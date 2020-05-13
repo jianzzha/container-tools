@@ -251,8 +251,6 @@ kind: VirtualMachine
 metadata:
   creationTimestamp: null
   name: vm-centos
-  #annotations:
-  #  k8s.v1.cni.cncf.io/networks:sriov-intel-east,sriov-intel-west
 spec:
   running: true
   template:
