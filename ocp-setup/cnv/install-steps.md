@@ -243,8 +243,11 @@ EOF
 podman build -t docker.io/cscojianzhan/centos-vmi .
 podman login
 podman push docker.io/cscojianzhan/centos-vmi
+```
 
 ### start VM using centos image with sriov interfaces
+
+```
 cat <<EOF | oc create -f - 
 apiVersion: kubevirt.io/v1alpha3
 kind: VirtualMachine
