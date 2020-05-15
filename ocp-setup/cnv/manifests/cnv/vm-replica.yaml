@@ -1,0 +1,50 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachineInstanceReplicaSet 
+metadata:
+  name: vm-centos
+spec:
+  paused: false
+  replicas: 2
+  selector:
+    matchLabels:
+       kubevirt.io/vmReplicaSet: vmi-replicaset-centos 
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vmReplicaSet: vmi-replicaset-centos
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker-cnv: ""
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: containerdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+          - sriov: {}
+            name: sriov-intel-east
+          - sriov: {}
+            name: sriov-intel-west 
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 8Gi 
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - containerDisk:
+          image: docker.io/cscojianzhan/centos-vmi
+        name: containerdisk 
+      networks:
+        - name: default
+          pod: {}
+        - multus:
+            networkName: default/sriov-intel-east
+          name: sriov-intel-east
+        - multus:
+            networkName: default/sriov-intel-west
+          name: sriov-intel-west
+

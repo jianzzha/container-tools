@@ -1,0 +1,59 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  name: vm-centos
+  labels:
+    vm-centos: ""
+spec:
+  running: true 
+  template:
+    metadata:
+      labels:
+        vm-centos: ""
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker-cnv: ""
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: containerdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+          - sriov: {}
+            name: sriov-intel-east
+          - sriov: {}
+            name: sriov-intel-west 
+        machine:
+          type: ""
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            memory: 4Gi 
+        cpu:
+          sockets: 2
+          cores: 1
+          threads: 1
+          dedicatedCpuPlacement: true
+        memory:
+          hugepages:
+            pageSize: "1Gi"
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - containerDisk:
+          image: docker.io/cscojianzhan/centos-vmi
+        name: containerdisk 
+      networks:
+        - name: default
+          pod: {}
+        - multus:
+            networkName: default/sriov-intel-east
+          name: sriov-intel-east
+        - multus:
+            networkName: default/sriov-intel-west
+          name: sriov-intel-west
+

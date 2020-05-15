@@ -80,7 +80,7 @@ EOF
 ### apply performance profile
 
 ```
-oc label --overwrite node perf150 node-role.kubernetes.io/worker-sriov=""
+oc label --overwrite node perf150 node-role.kubernetes.io/worker-cnf=""
 cat <<EOF | oc create -f -
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfigPool
@@ -95,16 +95,18 @@ spec:
     matchExpressions:
       - key: machineconfiguration.openshift.io/role
         operator: In
-        values: [worker,worker-sriov]
+        values: [worker,worker-cnf]
   nodeSelector:
     matchLabels:
-      node-role.kubernetes.io/worker-sriov: ""
+      node-role.kubernetes.io/worker-cnf: ""
 EOF
 ```
 
 ### wait until the node setup complete
 
 ### start sriov operator
+
+oc label --overwrite node perf150 feature.node.kubernetes.io/network-sriov.capable=true
 
 ```
 cat <<EOF | oc create -f -
