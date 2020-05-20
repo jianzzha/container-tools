@@ -20,6 +20,9 @@ spec:
           - disk:
               bus: virtio
             name: containerdisk
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
           interfaces:
           - masquerade: {}
             name: default
@@ -35,10 +38,11 @@ spec:
           requests:
             memory: 4Gi 
         cpu:
-          sockets: 2
+          sockets: 6
           cores: 1
           threads: 1
           dedicatedCpuPlacement: true
+          isolateEmulatorThread: true
         memory:
           hugepages:
             pageSize: "1Gi"
@@ -47,6 +51,38 @@ spec:
       - containerDisk:
           image: docker.io/cscojianzhan/centos-vmi
         name: containerdisk 
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            write_files:
+            - content: |
+                [Service]
+                Description=DPDK testpmd Service
+                Type=oneshot
+                RemainAfterExit=yes
+                ExecStart=/usr/local/libexec/start-testpmd.sh
+                [Install]
+                WantedBy=multi-user.target
+              path: /etc/systemd/system/testpmd.service
+              permissions: '0755'
+            - content: |
+                #!/usr/bin/bash
+                modprobe vfio enable_unsafe_noiommu_mode=1
+                modprobe vfio-pci
+                dpdk-devbind -u 02:01.0 02:02.0
+                dpdk-devbind -b vfio-pci 02:01.0 02:02.0
+                tmux kill-session -t testpmd 2>/dev/null
+                tmux new-session -s testpmd -d "testpmd -l 3-5 --socket-mem 1024 -n 4 --proc-type auto --file-prefix pg -w 02:01.0 -w 02:02.0 -- --nb-cores=2 --nb-ports=2 --portmask=3 --interactive --auto-start --rxq=1 --txq=1 --rxd=1024 --txd=1024"
+              path: /usr/local/libexec/start-testpmd.sh
+              permissions: '0755'
+            runcmd:
+              - grubby --update-kernel=`grubby --default-kernel` --args='default_hugepagesz=1GB hugepagesz=1G hugepages=1 intel_iommu=on iommu=pt isolcpus=3-5'
+              - yum -y install dpdk dpdk-tools tuned-profiles-cpu-partitioning tmux
+              - echo "isolated_cores=3-5" > /etc/tuned/cpu-partitioning-variables.conf
+              - tuned-adm profile cpu-partitioning
+              - systemctl enable testpmd.service
+              - reboot
+        name: cloudinitdisk
       networks:
         - name: default
           pod: {}
