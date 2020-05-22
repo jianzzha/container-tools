@@ -11,6 +11,8 @@ spec:
     env:
     - name: GIT_URL
       value: https://github.com/jianzzha/container-tools.git
+    - name: tool
+      value: uperf
     - name: mode 
       value: manual 
     securityContext:

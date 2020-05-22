@@ -25,23 +25,6 @@ done
 
 trap sigfunc TERM INT SIGUSR1
 
-cat <<EOF >request-response.xml
-<?xml version="1.0"?>
-<profile name="tcp-rr-8192B-8i">
-  <group nthreads="8">
-    <transaction iterations="1">
-      <flowop type="connect" options="remotehost=\${uperfSlave} protocol=tcp"/>
-    </transaction>
-    <transaction duration="\${duration}">
-      <flowop type="write" options="size=\${writeSize}"/>
-      <flowop type="read"  options="size=\${readSize}"/>
-    <transaction iterations="1">
-      <flowop type="disconnect" />
-    </transaction>
-  </group>
-</profile>
-EOF
-
 if [[ "${mode}" == "manual" ]]; then
 	uperf -s	
 elif [[ "${mode}" == "slave" ]]; then
@@ -54,6 +37,22 @@ elif [[ "${mode}" == "master" ]]; then
 		export writeSize=${writeSize:-8192}
 		export readSize=${readSize:-8192}
 		export duration=${duration:-66s}
+		cat <<EOF >request-response.xml
+<?xml version="1.0"?>
+<profile name="tcp-rr-8192B-8i">
+  <group nthreads="8">
+    <transaction iterations="1">
+      <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp"/>
+    </transaction>
+    <transaction duration="${duration}">
+      <flowop type="write" options="size=${writeSize}"/>
+      <flowop type="read"  options="size=${readSize}"/>
+    <transaction iterations="1">
+      <flowop type="disconnect" />
+    </transaction>
+  </group>
+</profile>
+EOF
 		uperf  -m request-response.xml
 	fi
 	sleep infinity	
