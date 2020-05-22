@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<profile name="tcp-rr-8192B-8i">
+  <group nthreads="8">
+    <transaction iterations="1">
+      <flowop type="connect" options="remotehost=cnv_linbr9 protocol=tcp"/>
+    </transaction>
+    <transaction duration="66s">
+      <flowop type="write" options="size=8192"/>
+      <flowop type="read"  options="size=8192"/>
+    <transaction iterations="1">
+      <flowop type="disconnect" />
+    </transaction>
+  </group>
+</profile>
+
+

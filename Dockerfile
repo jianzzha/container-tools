@@ -10,6 +10,7 @@ RUN yum -y install rt-tests rteval \
       libibverbs libibverbs-devel rdma-core-devel \
       libibverbs-utils mstflint dpdk dpdk-tools \
     && yum install -y libaio-devel libattr-devel libbsd-devel libcap-devel libgcrypt-devel \
+    && yum -y --enablerepo=epel-testing install uperf \
     && git clone https://github.com/ColinIanKing/stress-ng.git \
     && cd stress-ng && make clean && make \
     && install -D stress-ng /usr/local/bin/stress-ng \
