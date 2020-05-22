@@ -16,15 +16,15 @@ spec:
     - name: mode 
       value: master
     - name: uperfSlave
-      value: 
+      value: $slave
     securityContext:
       privileged: true
     resources:
       limits:
-        cpu: 4 
+        cpu: 8 
         memory: 4Gi
       requests:
-        cpu: 4 
+        cpu: 8 
         memory: 4Gi
   nodeSelector:
     kubernetes.io/hostname: "goblin-worker-1" 
