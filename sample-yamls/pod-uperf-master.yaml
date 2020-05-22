@@ -14,7 +14,9 @@ spec:
     - name: tool
       value: uperf
     - name: mode 
-      value: manual 
+      value: master
+    - name: uperfSlave
+      value: 
     securityContext:
       privileged: true
     resources:
@@ -26,4 +28,3 @@ spec:
         memory: 4Gi
   nodeSelector:
     kubernetes.io/hostname: "goblin-worker-1" 
-

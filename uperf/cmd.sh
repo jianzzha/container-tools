@@ -26,9 +26,9 @@ done
 trap sigfunc TERM INT SIGUSR1
 
 if [[ "${mode}" == "manual" ]]; then
-	uperf -s	
+	sleep infinity	
 elif [[ "${mode}" == "slave" ]]; then
-	sleep infinity
+	uperf -s
 elif [[ "${mode}" == "master" ]]; then
 	if [[ "${uperfSlave:-undefined}" == "undefined" ]]; then
 		echo "env var: uperfSlave needs to be defined for uperf master"

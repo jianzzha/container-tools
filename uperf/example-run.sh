@@ -16,9 +16,11 @@
 #      REVISION:  ---
 #===============================================================================
 
-set -o nounset                              # Treat unset variables as an error
 #!/usr/bin/bash
-oc create -f pod-uperf-slave.yaml
+if ! oc get pod uperf-slave; then
+	oc create -f pod-uperf-slave.yaml
+fi
+oc delete pod uperf-master
 while true; do
 	status=$(oc get pods uperf-slave -o json | jq -r '.status.phase')
 	if [[ "${status}" == "Running" ]]; then
