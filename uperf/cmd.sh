@@ -42,7 +42,7 @@ elif [[ "${mode}" == "master" ]]; then
 <profile name="tcp-rr-8192B-8i">
   <group nthreads="8">
     <transaction iterations="1">
-      <flowop type="accept" options="remotehost=${uperfSlave} protocol=tcp"/>
+      <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp tcp_nodelay"/>
     </transaction>
     <transaction duration="${duration}">
       <flowop type="write" options="size=${writeSize}"/>
