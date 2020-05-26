@@ -34,15 +34,17 @@ elif [[ "${mode}" == "master" ]]; then
 		echo "env var: uperfSlave needs to be defined for uperf master"
 	else
 		export uperfSlave=${uperfSlave}
-		export writeSize=${writeSize:-8192}
-		export readSize=${readSize:-8192}
-		export duration=${duration:-66s}
+		export writeSize=${writeSize:-1024}
+		export readSize=${readSize:-1024}
+		export duration=${duration:-60s}
+		export testType=rr
+		export threads=${threads:-1}
 		cat <<EOF >request-response.xml
 <?xml version="1.0"?>
-<profile name="tcp-rr-8192B-8i">
-  <group nthreads="8">
+<profile name="tcp-${testType}-${writeSize}B-${threads}i">
+  <group nthreads="${threads}">
     <transaction iterations="1">
-      <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp tcp_nodelay"/>
+      <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp"/>
     </transaction>
     <transaction duration="${duration}">
       <flowop type="write" options="size=${writeSize}"/>
