@@ -46,7 +46,6 @@ elif [[ "${mode}" == "master" ]]; then
       <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp"/>
     </transaction>
     <transaction duration="${duration}">
-      <flowop type="write" options="size=${size}"/>
       <flowop type="read"  options="size=${size}"/>
     <transaction iterations="1">
       <flowop type="disconnect" />
