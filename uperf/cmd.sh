@@ -36,24 +36,18 @@ elif [[ "${mode}" == "master" ]]; then
 		export uperfSlave=${uperfSlave}
 		export size=${size:-1024}
 		export duration=${duration:-60s}
-		export testType=rr
+		export profile=${profile:-stream}
 		export threads=${threads:-1}
-		cat <<EOF >request-response.xml
-<?xml version="1.0"?>
-<profile name="tcp-${testType}-${size}B-${threads}i">
-  <group nthreads="${threads}">
-    <transaction iterations="1">
-      <flowop type="connect" options="remotehost=${uperfSlave} protocol=tcp"/>
-    </transaction>
-    <transaction duration="${duration}">
-      <flowop type="write"  options="count=16 size=${size}"/>
-    <transaction iterations="1">
-      <flowop type="disconnect" />
-    </transaction>
-  </group>
-</profile>
-EOF
-		uperf  -m request-response.xml
+		envsubst <uperf/stream.xml.tmpl >uperf/stream.xml
+		envsubst <uperf/request-response.xml.tmpl > uperf/request-response.xml
+		if [[ "${profile}" == "rr" ]]; then
+			uperf  -m request-response.xml
+		elif [[ "${profile}" == "stream" ]]; then
+			uperf  -m stream.xml
+		else
+			echo "invalid profile: ${profile}"
+		fi
+
 	fi
 	sleep infinity	
 fi
