@@ -8,7 +8,7 @@ RUN yum -y install rt-tests rteval \
       python3 net-tools libtool automake gcc gcc-c++ cmake autoconf \
       unzip python3-six numactl-devel make kernel-devel numactl-libs \
       libibverbs libibverbs-devel rdma-core-devel \
-      libibverbs-utils mstflint dpdk dpdk-tools \
+      libibverbs-utils mstflint dpdk dpdk-tools gettext \
     && yum install -y libaio-devel libattr-devel libbsd-devel libcap-devel libgcrypt-devel \
     && yum -y --enablerepo=epel-testing install uperf \
     && git clone https://github.com/ColinIanKing/stress-ng.git \

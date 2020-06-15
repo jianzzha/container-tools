@@ -41,9 +41,9 @@ elif [[ "${mode}" == "master" ]]; then
 		envsubst <uperf/stream.xml.tmpl >uperf/stream.xml
 		envsubst <uperf/request-response.xml.tmpl > uperf/request-response.xml
 		if [[ "${profile}" == "rr" ]]; then
-			uperf  -m request-response.xml
+			uperf  -m uperf/request-response.xml
 		elif [[ "${profile}" == "stream" ]]; then
-			uperf  -m stream.xml
+			uperf  -m uperf/stream.xml
 		else
 			echo "invalid profile: ${profile}"
 		fi
