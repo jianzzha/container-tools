@@ -1,0 +1,39 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  name: vm-cirros
+  labels:
+    vm-cirros: ""
+spec:
+  running: true 
+  template:
+    metadata:
+      labels:
+        vm-cirros: ""
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: "worker0"
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: containerdisk
+          interfaces:
+          - masquerade: {}
+            name: default
+        machine:
+          type: ""
+        resources:
+          requests:
+            memory: 1Gi 
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - containerDisk:
+          image: docker.io/cscojianzhan/cirros-vmi
+        name: containerdisk 
+      networks:
+        - name: default
+          pod: {}
+
