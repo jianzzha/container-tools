@@ -80,7 +80,7 @@ EOF
 ### apply performance profile
 
 ```
-oc label --overwrite node perf150 node-role.kubernetes.io/worker-cnf=""
+oc label --overwrite node worker0 node-role.kubernetes.io/worker-cnf=""
 cat <<EOF | oc create -f -
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfigPool
@@ -99,6 +99,24 @@ spec:
   nodeSelector:
     matchLabels:
       node-role.kubernetes.io/worker-cnf: ""
+---
+apiVersion: performance.openshift.io/v1alpha1
+kind: PerformanceProfile
+metadata:
+  name: trafficgen 
+spec:
+  cpu:
+    isolated: "4-31"
+    reserved: "0-3"
+  hugepages:
+    defaultHugepagesSize: "1G"
+    pages:
+    - size: "1G"
+      count: 8
+  realTimeKernel:
+    enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/worker-cnf: ""
 EOF
 ```
 
@@ -106,7 +124,7 @@ EOF
 
 ### start sriov operator
 
-oc label --overwrite node perf150 feature.node.kubernetes.io/network-sriov.capable=true
+oc label --overwrite node worker0 feature.node.kubernetes.io/network-sriov.capable=true
 
 ```
 cat <<EOF | oc create -f -
