@@ -5,6 +5,7 @@ metadata:
   namespace: openshift-sriov-network-operator
 spec:
   deviceType: netdevice
+  #deviceType: vfio-pci
   mtu: 9000
   nicSelector:
     deviceID: "158b"
@@ -14,7 +15,7 @@ spec:
     pfNames:
     - ens7f0
   nodeSelector:
-    feature.node.kubernetes.io/network-sriov.capable: "true"
+    node-role.kubernetes.io/worker-cnf: ""
   numVfs: 6
   priority: 5
   resourceName: intelnics0

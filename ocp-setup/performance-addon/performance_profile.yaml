@@ -1,10 +1,10 @@
 apiVersion: performance.openshift.io/v1alpha1
 kind: PerformanceProfile
 metadata:
-  name: "${WORKER_NODE}"
+  name: trafficgen 
 spec:
   cpu:
-    isolated: "4-23"
+    isolated: "4-31"
     reserved: "0-3"
   hugepages:
     defaultHugepagesSize: "1G"
@@ -12,7 +12,7 @@ spec:
     - size: "1G"
       count: 8
   realTimeKernel:
-    enabled: true
+    enabled: false 
   nodeSelector:
-    node-role.kubernetes.io/worker-rt: ""
+    node-role.kubernetes.io/worker-cnf: ""
 

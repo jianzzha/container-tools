@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: testpmd
   annotations:
-    k8s.v1.cni.cncf.io/networks: sriov-mlx-west,sriov-mlx-east
+    k8s.v1.cni.cncf.io/networks: sriov-intel-west,sriov-intel-east 
 spec:
   restartPolicy: Never
   containers:
@@ -36,6 +36,7 @@ spec:
     emptyDir:
       medium: HugePages
   nodeSelector:
-    node-role.kubernetes.io/worker-rt: ""
+    kubernetes.io/hostname: worker0 
+ 
 
 

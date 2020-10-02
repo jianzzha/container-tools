@@ -11,6 +11,8 @@ spec:
     image: quay.io/jianzzha/perf-tools
     imagePullPolicy: Always
     env:
+    - name: tool
+      value: testpmd
     - name: ring_size
       value: "2048"
     securityContext:
@@ -18,6 +20,12 @@ spec:
     volumeMounts:
     - mountPath: /dev/hugepages
       name: hugepage
+    - mountPath: /sys
+      name: sys
+    - mountPath: /lib/modules
+      name: modules
+    - mountPath: /dev
+      name: dev
     resources:
       limits:
         cpu: 4
@@ -31,5 +39,14 @@ spec:
   - name: hugepage
     emptyDir:
       medium: HugePages
+  - name: sys
+    hostPath:
+      path: /sys
+  - name: modules
+    hostPath:
+      path: /lib/modules
+  - name: dev
+    hostPath:
+      path: /dev
 
 
