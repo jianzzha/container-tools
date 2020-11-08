@@ -148,6 +148,7 @@ spec:
 EOF
 
 cat <<EOF | oc create -f -
+apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
 metadata:
   name: policy-intel-west
